@@ -55,9 +55,6 @@ src="https://www.facebook.com/tr?id=1330731452509126&ev=PageView&noscript=1"
           page_location: window.location.href,
           language: document.documentElement.getAttribute('data-lang') || 'en'
         });
-        gtag('event', 'conversion', {
-          'send_to': 'AW-17506972446/njh3CKDY980cEJ7m_JtB'
-        });
       }
     }
   }, false);
@@ -1214,13 +1211,24 @@ src="https://www.facebook.com/tr?id=1330731452509126&ev=PageView&noscript=1"
       } catch (e) { /* leave href untouched if it isn't a parseable absolute URL */ }
     }
     el.addEventListener('click', () => {
+      const lang = document.documentElement.getAttribute('data-lang') || 'en';
+      const href = el.getAttribute('href') || '';
+      // Goal events use the same names as upis.ksi-montenegro.com (one GA4 key event per goal).
+      const goal = href.includes('openapply.com') ? 'begin_application'
+        : href.includes('wa.me') ? 'whatsapp_click'
+        : href.startsWith('tel:') ? 'call_click' : null;
       if (typeof gtag === 'function') {
         gtag('event', 'cta_click', {
           cta_id: ctaId,
           cta_destination: el.href || null,
           page_location: window.location.href,
-          language: document.documentElement.getAttribute('data-lang') || 'en'
+          language: lang
         });
+        if (goal) gtag('event', goal, { cta_id: ctaId, language: lang, transport_type: 'beacon' });
+      }
+      if (goal && typeof fbq === 'function') {
+        if (goal === 'begin_application') fbq('trackCustom', 'StartApplication', { content_name: 'openapply_' + lang });
+        else fbq('track', 'Contact', { content_name: goal === 'whatsapp_click' ? 'whatsapp' : 'call' });
       }
     });
   });

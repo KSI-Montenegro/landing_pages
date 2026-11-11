@@ -57,7 +57,6 @@ src="https://www.facebook.com/tr?id=1330731452509126&ev=PageView&noscript=1"
 <script>
   gtag('event', 'prospectus_request', { method: 'success_page', language: 'en', page_location: window.location.href });
   gtag('event', 'Prospect_Downloaded_EN');
-  gtag('event', 'conversion', { 'send_to': 'AW-17506972446/njh3CKDY980cEJ7m_JtB' });
 </script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -140,5 +139,26 @@ src="https://www.facebook.com/tr?id=1330731452509126&ev=PageView&noscript=1"
 
     <p class="footer-note">Prefer email? Write to <a href="mailto:info@ksi-montenegro.com">info@ksi-montenegro.com</a></p>
   </div>
+<script>
+  // Click tracking, same event names as upis.ksi-montenegro.com so one GA4 key event covers both sites.
+  document.querySelectorAll('[data-cta]').forEach(function (el) {
+    el.addEventListener('click', function () {
+      var href = el.getAttribute('href') || '';
+      var lang = document.documentElement.getAttribute('data-lang') || 'en';
+      var p = { cta_id: el.getAttribute('data-cta'), language: lang, transport_type: 'beacon' };
+      if (typeof gtag === 'function') {
+        gtag('event', 'cta_click', { cta_id: p.cta_id, cta_destination: href, language: lang });
+        if (href.indexOf('openapply.com') > -1) gtag('event', 'begin_application', p);
+        else if (href.indexOf('wa.me') > -1) gtag('event', 'whatsapp_click', p);
+        else if (href.indexOf('tel:') === 0) gtag('event', 'call_click', p);
+      }
+      if (typeof fbq === 'function') {
+        if (href.indexOf('openapply.com') > -1) fbq('trackCustom', 'StartApplication', { content_name: 'openapply_' + lang });
+        else if (href.indexOf('wa.me') > -1) fbq('track', 'Contact', { content_name: 'whatsapp' });
+        else if (href.indexOf('tel:') === 0) fbq('track', 'Contact', { content_name: 'call' });
+      }
+    });
+  });
+</script>
 </body>
 </html>
